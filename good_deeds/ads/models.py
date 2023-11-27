@@ -38,8 +38,9 @@ class Ad(models.Model):
     description = models.TextField(
         verbose_name='Описание объявления'
     )
-    category = models.ManyToManyField(
-        Category
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE
     )
     pub_date = models.DateTimeField(
         auto_now_add=True,
@@ -68,5 +69,36 @@ class AdRequest(models.Model):
         Ad,
         on_delete=models.CASCADE
     )
-    comment = models.TextField()
+    comment = models.TextField(
+        verbose_name='Комментарий'
+    )
+    pub_date = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name='Время отклика'
+    )
 
+    class Meta:
+        verbose_name = 'Заявка'
+        verbose_name_plural = 'Заявки'
+        ordering = ['-pub_date']
+
+    def __str__(self):
+        return f'{self.user} подал заявку на {self.ad.title}'
+
+
+class ApplicantList(models.Model):
+    ad = models.ForeignKey(
+        Ad,
+        on_delete=models.CASCADE
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+    is_selected = models.BooleanField(
+        default=False,
+        verbose_name='Выбор кандидата'
+    )
+
+    class Meta:
+        verbose_name = 'Список претендентов'
